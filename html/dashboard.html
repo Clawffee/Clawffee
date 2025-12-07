@@ -144,6 +144,15 @@
         </div>
     </nav>
     <div class="container">
+        <style>
+            .card-hover {
+                cursor: pointer;
+            }
+            .card-hover:hover {
+                background-color: #00000044;
+                transition: 200ms background-color ;
+            }
+        </style>
         <template id="module_enable_button">
             <button type="button" name="" id="" class="btn btn-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -163,14 +172,14 @@
             </button>
         </template>
         <template id="module_file">
-            <div class="card mb-3">
+            <div class="card mb-3 card-hover">
                 <div class="row g-2">
                     <div class="col" style="height: 4em; min-width: 4em; max-width: 4em; flex-grow: 0;">
-                        <img src="test">
+                        <img src="" file_img>
                     </div>
                     <div class="col">
                         <div class="card-body">
-                            <h5 class="card-title" style="text-align: start;" file_name>blueberries.js</h5>
+                            <h5 class="card-title" style="text-align: start;" file_name></h5>
                         </div>
                     </div>
                     <div class="col me-4" style="flex-grow: 0; align-self: center;">
@@ -206,18 +215,18 @@
             </div>
         </template>
         <template id="module_folder">
-            <div class="card mb-3">
+            <div class="card mb-3 card-hover">
                 <div class="row g-2">
                     <div class="col" style="height: 4em; min-width: 4em; max-width: 4em; flex-grow: 0;">
-                        <img src="test">
+                        <img src="" folder_img>
                     </div>
                     <div class="col">
                         <div class="card-body">
-                            <h5 class="card-title" style="text-align: start;"><u>folder</u></h5>
+                            <h5 class="card-title" style="text-align: start;"><u folder_name>folder</u></h5>
                         </div>
                     </div>
                     <div class="col me-4" style="flex-grow: 0; align-self: center;">
-                        <div class="btn-group">
+                        <div class="btn-group" buttons>
                             <button type="button" name="" id="" class="btn btn-primary">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-folder-symlink-fill" viewBox="0 0 16 16">
@@ -246,6 +255,66 @@
                 </div>
             </div>
         </template>
+        <script>
+            const container = document.currentScript.parentElement;
+            /**
+             * @type {HTMLElement}
+             */
+            const file_template = document.getElementById('module_file').content;
+            /**
+             * @type {HTMLElement}
+             */
+            const folder_template = document.getElementById('module_folder').content;
+            /**
+             * @type {HTMLElement}
+             */
+            const enable_button = document.getElementById('module_enable_button').content;
+            /**
+             * @type {HTMLElement}
+             */
+            const disable_button = document.getElementById('module_disable_button').content;
+            const path = [];
+            function updateModules() {
+                let folder = sharedServerData.internal.commands;
+                path.forEach((v) => {
+                    folder = folder.childfolders[v] ?? {childfolders: {}, childscripts: {}};
+                });
+                const elements = [];
+                Object.keys(folder.childscripts).forEach((v) => {
+                    const mod = folder.childscripts[v];
+                    if(!mod || mod.hidden) return;
+                    const node = file_template.cloneNode(true);
+                    node.querySelector('[file_name]').textContent = mod.name;
+                    node.querySelector('[file_img]').src = mod.img ?? "";
+                    if(mod.disabled) {
+                        node.querySelector('[buttons]').appendChild(enable_button.cloneNode(true));
+                    } else {
+                        node.querySelector('[buttons]').appendChild(disable_button.cloneNode(true));
+                    }
+                    elements.push([node, mod.sortname ?? mod.name]);
+                });
+                Object.keys(folder.childfolders).forEach((v) => {
+                    const mod = folder.childfolders[v];
+                    if(!mod || mod.hidden) return;
+                    const node = folder_template.cloneNode(true);
+                    node.querySelector('[folder_name]').textContent = mod.name;
+                    node.querySelector('[folder_img]').src = mod.img ?? "";
+                    if(mod.disabled) {
+                        node.querySelector('[buttons]').appendChild(enable_button.cloneNode(true));
+                    } else {
+                        node.querySelector('[buttons]').appendChild(disable_button.cloneNode(true));
+                    }
+                    elements.push([node, mod.sortname ?? mod.name]);
+                });
+                elements.sort((a,b) => a[1].localeCompare(b[1])).forEach((v) => {
+                    container.appendChild(v[0]);
+                })
+            }
+            const moduleL = katzComm.addListener(sharedServerData, "internal.commands", (path, newData, oldData) => {
+                console.log(sharedServerData.internal.commands);
+                updateModules();
+            });
+        </script>
     </div>
     <div class="offcanvas offcanvas-start " tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
         <div class="offcanvas-header pb-0 mb-0">
