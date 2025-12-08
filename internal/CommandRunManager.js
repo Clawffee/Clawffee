@@ -41,14 +41,18 @@
 const fs = require('fs');
 const { hookToFolder } = require('./FSHookManager');
 const { join, sep, basename } = require('path')
-const { commandFolders } = require('./JSRunnerGlobals');
-const { runAsFile } = require('./ModuleHelpers');
+const { commandFolders } = require('./CommandRunnerGlobals');
 const { sharedServerData } = require('./SharedServerData');
 
 /**
  * @type {{[x: string]: Array<Function>}}
  */
 globalThis.clawffeeInternals.fileCleanupFuncs = {}
+globalThis.clawffeeInternals.fileManagers = {};
+
+sharedServerData.internal.commands = JSON.parse(fs.readFileSync('config/internal/commands.json'));
+const config = sharedServerData.internal.commands;
+clawffeeInternals.commandConfig = config;
 /**
  * Unloads a commands at a given path
  * @param {string} path 
@@ -71,26 +75,8 @@ function unloadCommand(path) {
 
 let workingDirectory = process.cwd();
 
-globalThis.clawffeeInternals.defaultFile = "console.log('Awoof!')\n";
-console.info("To start, create a .js file in the commands folder!");
-globalThis.clawffeeInternals.fileManagers = {
-   '.js': {
-        onLoad(fullpath, data, initial) {
-            if(!data.trim()) {
-                data = globalThis.clawffeeInternals.defaultFile + data;
-                setTimeout(() => fs.writeFile(fullpath, data, (err) => {
-                    if(err) {
-                        console.error(err);
-                    }
-                }), 10);
-            }
-            runAsFile(fullpath, data, initial);
-        },
-        onRequire(fullpath, data) {
-            return runAsFile(fullpath, data).exports;
-        }
-    }
-}
+
+
 /**
  * Loads the commands at a given path
  * @param {string} path 
@@ -116,9 +102,6 @@ function loadCommand(path, str, initial) {
     }
 }
 
-sharedServerData.internal.commands = JSON.parse(fs.readFileSync('config/internal/commands.json'));
-const config = sharedServerData.internal.commands;
-clawffeeInternals.commandConfig = config;
 
 /**
  * 
@@ -132,7 +115,7 @@ function getCMDObject(path) {
     while(folders.length > 1) {
         const fname = folders.shift();
         if(!mgr.childfolders[fname]) mgr.childfolders[fname] = {
-            name: 'fname',
+            name: fname,
             sortname: null,
             img: null,
             hidden: false,

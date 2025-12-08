@@ -21,10 +21,8 @@ process.on('multipleResolves', (type, promise, reason) => {
 
 require('./internal/ConsoleOverrides');
 require('./internal/Server');
-const {runCommands} = require('./internal/JSRunManager');
+const {runCommands} = require('./internal/CommandRunManager');
 const { requirePluginsRecursively }  = require('./internal/PluginLoader');
-requirePluginsRecursively(require('path').join(process.cwd(), 'plugins', 'internal'));
-requirePluginsRecursively(require('path').join(process.cwd(), 'plugins', 'builtin'));
 requirePluginsRecursively(require('path').join(process.cwd(), 'plugins'));
 
 /**

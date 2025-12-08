@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { commandFolders } = require('./JSRunnerGlobals');
+const { fileManagers,  commandGlobals: {commandFolders}} = require('../clawffeeInternals');
 const { wrapCode } = require('./JSParseManager');
 
 class CircularRequireError extends Error {
@@ -99,6 +99,24 @@ function runAsFile(fullpath, funcStr, keepCache) {
     return mod;
 }
 
+globalThis.clawffeeInternals.defaultFile = "console.log('Awoof!')\n";
+console.info("To start, create a .js file in the commands folder!");
+fileManagers['.js'] = {
+    onLoad(fullpath, data, initial) {
+        if(!data.trim()) {
+            data = globalThis.clawffeeInternals.defaultFile + data;
+            setTimeout(() => fs.writeFile(fullpath, data, (err) => {
+                if(err) {
+                    console.error(err);
+                }
+            }), 10);
+        }
+        runAsFile(fullpath, data, initial);
+    },
+    onRequire(fullpath, data) {
+        return runAsFile(fullpath, data).exports;
+    }
+}
 
 module.exports = {
     runAsFile

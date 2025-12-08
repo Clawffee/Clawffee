@@ -1,9 +1,8 @@
-const { functionNames, functionFileNames, functionOverrides, fileInfo } = require('./JSRunnerGlobals');
+const { functionNames, functionFileNames, functionOverrides, fileInfo } = clawffeeInternals.commandGlobals;
 
 const acorn = require("acorn");
 const acorn_walk = require("acorn-walk");
-const { type } = require('os');
-const { prettyPrepareStack } = require('./ErrorOverrides');
+const prettyPrepareStack = require('../clawffeeInternals').prettyPrepareStack;
 
 // TODO add callback that callback in file got ran for GUI
 
@@ -106,6 +105,12 @@ function applyOverrides(filename, codeStr, parsedCode, newLinePositions) {
     };
 }
 
+/**
+ * Add a function with overriden variables to use in the error log
+ * @param {string} filename fake file name to assign to the function
+ * @param {Function} fn the function to have its data overriden
+ * @param {string} fakename the name to use for function.name
+ */
 globalThis.clawffeeInternals.addFunction = (name, fn, fakename) => {
     /**
      * @type {string}

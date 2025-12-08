@@ -1,5 +1,5 @@
 
-const { functionNames, functionFileNames, functionOverrides, fileInfo } = require('./JSRunnerGlobals');
+const { functionNames, functionFileNames, functionOverrides, fileInfo } = require('./CommandRunnerGlobals');
 const util = require('util');
 const fs = require('fs');
 const acorn = require("acorn");
@@ -326,6 +326,7 @@ function prettyPrepareStack(err, stack) {
     }
     return errStr;
 }
+globalThis.clawffeeInternals.prettyPrepareStack = prettyPrepareStack;
 
 module.exports = {
     prettyPrepareStack
