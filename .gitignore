@@ -3,6 +3,7 @@
 **/*._conf
 
 config/*
+!config/internal/version.json
 
 # i do not know why this is required but :3
 
