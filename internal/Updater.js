@@ -28,7 +28,7 @@ const config = require('../config/internal/version.json');
 
 fetch(config.url).then((value) => value.blob().then((data) => data.json().then(json => {
     if(json.name != config.version) {
-        console.log(`\u001b[32mImportant!\n\n\nnew version available! \u001b[0m${json.name}\u001b[32m\n\nvisit \u001b[0;1;3;4mhttp://localhost:4444/internal/update\u001b[0;32m to update clawffee!\n\n${json.body}\n\n`);
+        console.log(`\u001b[32mImportant!\n\n\nnew version available! \u001b[0m${json.name}\u001b[32m\n\nvisit \u001b[0;1;3;4mhttp://localhost:4444/internal/update\u001b[0;32m to update clawffee!\n\n${json.body}\n\nWIP`);
         const { sharedServerData, functions } = require('./Server'); 
         sharedServerData.internal.update = {ver: json.name, body: json.body};
         functions['/internal/update'] = () => {
