@@ -1,6 +1,7 @@
+require('./internal/Updater');
+console.log("\n Join the discord! \u001b[32;1;3;4mhttps://discord.gg/744T53nJFu\u001b[0m");
 
-console.log("\u001b[0m\n Clawffee Version 0.3.2 🐾");
-console.log("\u001b[0m\n Join the discord! https://discord.gg/744T53nJFu");
+
 console.log("╴".repeat(32) + "╮");
 
 if(process.argv.includes('--verbose'))

@@ -114,5 +114,6 @@ clawffeeInternals.serverFunctions = functions;
 console.log(`server running on port ${server.port}`);
 
 module.exports = {
-    sharedServerData
+    sharedServerData,
+    functions
 }
