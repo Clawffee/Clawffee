@@ -1,6 +1,6 @@
 [submodule "plugins/internal"]
 	path = plugins/internal
-	url = https://github.com/PurredCoffee/clawffee-plugin-internal
+	url = https://github.com/Clawffee/clawffee-plugin-internal
 [submodule "plugins/builtin"]
 	path = plugins/builtin
-	url = https://github.com/PurredCoffee/clawffee-plugin-builtin
+	url = https://github.com/Clawffee/clawffee-plugin-builtin
