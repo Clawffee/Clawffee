@@ -36,7 +36,7 @@ Promise.all([
         const { sharedServerData, functions } = require('./Server'); 
         sharedServerData.internal.update = {ver: json.name, body: json.body};
         functions['/internal/update/internal'] = () => {
-            
+            // TODO: figure out which assets to download and remember to set header Accept to application/octet-stream and X-GitHub-Api-Version: 2022-11-28
         }
     } else {
         console.warn('Could not check for updates!')
