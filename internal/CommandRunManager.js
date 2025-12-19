@@ -60,7 +60,7 @@ clawffeeInternals.commandConfig = config;
 function unloadCommand(path) {
     const fullPath = join(workingDirectory, path);
     if(!globalThis.clawffeeInternals.fileCleanupFuncs[fullPath]) return;
-    globalThis.clawffeeInternals.fileCleanupFuncs[fullPath].forEach((v) => v());
+    globalThis.clawffeeInternals.fileCleanupFuncs[fullPath].forEach((v) => {try {v()} catch(e) {console.error(e)}});
     for (const ending in globalThis.clawffeeInternals.fileManagers) {
         if (!Object.hasOwn(globalThis.clawffeeInternals.fileManagers, ending) || !path.endsWith(ending)) continue;
         const mgr = globalThis.clawffeeInternals.fileManagers[ending];
