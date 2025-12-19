@@ -1,10 +1,11 @@
+const fs = require('fs');
+
 try {
     const path = require('path');
     const exe = process.execPath;
     const name = path.basename(exe);
     if (name.toLowerCase().endsWith('_update.exe')) {
         
-        const fs = require('fs');
         const child_process = require('child_process');
         const dir = path.dirname(exe);
         const targetName = name.replace(/_update\.exe$/i, '.exe');
@@ -21,20 +22,26 @@ try {
         }
     }
 } catch (err) {
-    console.error('Update check failed:', err);
+    console.error('Overriding original Executable failed:', err);
 }
 
 const config = require('../config/internal/version.json');
 
-fetch(config.url).then((value) => value.blob().then((data) => data.json().then(json => {
-    if(json.name != config.version) {
-        console.log(`\u001b[32mImportant!\n\n\nnew version available! \u001b[0m${json.name}\u001b[32m\n\nvisit \u001b[0;1;3;4mhttp://localhost:4444/internal/update\u001b[0;32m to update clawffee!\n\n${json.body}\n\nWIP`);
+Promise.all([
+    fetch(config.url).then((value) => value.json()),
+    fetch(config.plugin_url).then((value) => value.json())
+]).then(([json, plugin_json]) => {
+    if(json.name && json.name != config.version && plugin_json.name && plugin_json.name != config.version) {
+        console.log(`\u001b[32mImportant!\n\n\nnew version available! \u001b[0m${json.name}\u001b[32m\n\nvisit \u001b[0;1;3;4mhttp://localhost:4444/internal/update/internal\u001b[0;32m to update clawffee!\n\n${json.body}\n\nWIP`);
         const { sharedServerData, functions } = require('./Server'); 
         sharedServerData.internal.update = {ver: json.name, body: json.body};
-        functions['/internal/update'] = () => {
-
+        functions['/internal/update/internal'] = () => {
+            
         }
+    } else {
+        console.warn('Could not check for updates!')
     }
-}).catch()).catch()).catch();
-
+}, e => {
+    console.warn(e);
+});
 console.log(`\u001b[0m\n Clawffee Version ${config.version} 🐾`);
