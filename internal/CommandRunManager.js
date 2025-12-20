@@ -143,11 +143,8 @@ function runCommands(folder) {
     hookToFolder(folder, (type, path, stats) => {
         const cmdobj = getCMDObject(path);
         if(type == 'unlink') {
-            if(stats.isDirectory()) {
-                delete cmdobj.childfolders[basename(path)];
-            } else {
-                delete cmdobj.childscripts[basename(path)];
-            }
+            delete cmdobj.childfolders[basename(path)];
+            delete cmdobj.childscripts[basename(path)];
         } else {
             if(stats.isDirectory()) {
                 if(!cmdobj.childfolders[basename(path)]) {
