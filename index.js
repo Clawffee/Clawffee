@@ -1,42 +1,17 @@
-require('./internal/Updater');
-console.log("\n Join the discord! \u001b[32;1;3;4mhttps://discord.gg/744T53nJFu\u001b[0m");
+const path = require('path');
+const crypto = require('crypto');
 
 
-console.log("╴".repeat(32) + "╮");
 
-if(process.argv.includes('--verbose'))
-    require('./internal/verbose');
+try {
+    const encHash = new Buffer(require('./' + path.join('plugins/internal/version.json')).hash, 'base64');
+    const pubKey = require('./internal.pub.txt').default;
+    const decHash = crypto.publicDecrypt(crypto.createPublicKey({key: pubKey, format: 'pem'}), encHash).toString('base64');
 
-globalThis.clawffeeInternals = {}
+    const clearHash = require('./hash_folder.js')('plugins/internal', ['version.json']).hash.toString('base64');
+    if(decHash !== clearHash) return prompt(`\u001b[31mFAILED TO VERIFY CLAWFFEE INTEGRITY\u001b[0m got ${clearHash} expected ${decHash}`);
+} catch (e) {
+    return prompt(`\u001b[31mFAILED TO VERIFY CLAWFFEE INTEGRITY\u001b[0m DECRYPTION FAILURE`);
+}
 
-// Global error handlers
-process.on('uncaughtException', (err) => {
-    console.error("Uncaught Error!", err);
-});
-process.on('unhandledRejection', (reason, promise) => {
-    console.error("Unhandled Rejection!", "reason:", reason);
-});
-process.on('multipleResolves', (type, promise, reason) => {
-    console.error("Multiple Resolves!", type, reason);
-});
-
-require('./internal/ConsoleOverrides');
-require('./internal/Server');
-const {runCommands} = require('./internal/CommandRunManager');
-const { requirePluginsRecursively }  = require('./internal/PluginLoader');
-requirePluginsRecursively(require('path').join(process.cwd(), 'plugins'));
-
-/**
-const worker = new Worker(
-    require.resolve("./dashboard.js"), 
-    {
-        smol: true,
-    }
-);
-worker.addEventListener("close", event => {
-    console.log("exiting...")
-    process.exit();
-});
-*/
-
-runCommands('./commands');
+require('./' + path.join('plugins/internal/_clawffee/index.js'));

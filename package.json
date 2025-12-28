@@ -3,17 +3,11 @@
     "start": "node --expose_gc index.js"
   },
   "dependencies": {
-    "acorn": "^8.15.0",
-    "acorn-walk": "^8.3.4",
-    "bootstrap": "^5.3.8",
-    "chokidar": "^4.0.3",
-    "webview-bun": "https://github.com/PurredCoffee/webview-bun-bytecode.git"
   },
   "imports": {
-    "#helpers": "./plugins/builtin/helpers.js",
-    "#helper": "./plugins/builtin/helpers.js"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.18"
+    "@types/bun": "^1.2.18",
+    "bootstrap": "^5.3.8"
   }
 }

@@ -1,0 +1,1 @@
+require('./plugins/internal/_clawffee/index.js');
