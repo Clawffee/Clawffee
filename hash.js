@@ -36,7 +36,7 @@ async function promptPassword (message) {
 const foldername = await promptClear('specify a folder path');
 const folder = path.join("plugins", foldername);
 
-const clearHash = require('./hash_folder.js')(folder, ['package.json','.git','.gitignore', 'version.json', ...process.argv]);
+const clearHash = require('./hash_folder.js')(folder, [...process.argv]);
 console.log(clearHash);
 
 let keypath = await promptClear('specify a key path(null to generate a new one)');
@@ -60,7 +60,10 @@ if(!keypath) {
 
     fs.writeFileSync(foldername + '.priv', privateKey);
     fs.writeFileSync(foldername + '.pub.txt', publicKey);
-    keypath = foldername + '.priv';
+    const json = require('./' + path.join(folder, 'version.json'));
+    json.pub_key = publicKey;
+    fs.writeFileSync(path.join(folder, 'version.json'), JSON.stringify(json, null, 4));
+    console.info(`wrote the keys into ${oldername + '.priv'} and ${foldername + '.pub.txt'}`)
 }
 const privateKey = fs.readFileSync(keypath);
 console.log(clearHash.hash.toString('base64'));
@@ -69,4 +72,8 @@ console.log(encHash);
 const json = require('./' + path.join(folder, 'version.json'));
 json.hash = encHash;
 fs.writeFileSync(path.join(folder, 'version.json'), JSON.stringify(json, null, 4));
+const commit = await promptClear('add the version? y/N');
+if(commit.toLowerCase()[0] == 'y') {
+  exec(`cd ${folder}; git add version.json`);
+}
 })();

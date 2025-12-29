@@ -12,7 +12,12 @@ module.exports = (folder, excludes) => {
         });
     }
     
-    const skipped = []
+    const skipped = [];
+    excludes.push('version.json');
+    version = JSON.parse(fs.readFileSync(folder + '/version.json'));
+    delete version.hash;
+    write(JSON.stringify(version));
+
     
     function enterFolder(p) {
         const files = fs.readdirSync(p);
@@ -20,8 +25,6 @@ module.exports = (folder, excludes) => {
             v = p + '/' + v;
             if(excludes?.includes(v.substring(folder.length + 1)))
                 return skipped.push(v.substring(folder.length + 1));
-    
-            if(v == folder + '/version.json') return;
             write(v.substring(folder.length + 1));
             const stat = fs.statSync(v);
             if(stat.isFile()) {
