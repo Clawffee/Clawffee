@@ -25,3 +25,7 @@ bun.lock
 obs-prot.json
 !build/**/*
 build/**/node_modules/*
+
+# build and backups
+*.bak
+*.tar.gz

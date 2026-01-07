@@ -36,5 +36,6 @@ module.exports = (folder, excludes) => {
         });
     }
     enterFolder(folder);
+    excludes.pop();
     return {hash: hash.digest(), skipped};
 }

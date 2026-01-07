@@ -49,7 +49,7 @@ const fs = require('fs');
     const foldername = await getParam('-f', 'specify a plugin folder name');
     const folder = path.join("plugins", foldername);
     const ignoredFiles = [...process.argv.slice(process.argv.findLastIndex(v => v.startsWith('-')) + 2)];
-    const clearHash = require('./hash_folder.js')(folder, ignoredFiles);
+    const clearHash = require('./internals/hash_folder.js')(folder, ignoredFiles);
     console.log(clearHash);
 
     let keypath = await getParam('-k', 'specify a key path(null to generate a new one)');
