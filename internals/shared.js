@@ -19,7 +19,7 @@ function verifyHash(folder, pubKey) {
 }
 
 
-const pubKey = require('../internal.pub.txt').default;
+const pubKey = require('../internal.pub.txt')?.default || require('../internal.pub.txt');
 
 async function getUpdate() {
     const dns = require('dns/promises');
@@ -62,7 +62,7 @@ function runUpdate() { return new Promise((resolve, reject) => {update_info.then
     console.log(url);
     function verifyDownload() {
         console.log(`finished inflating update at ${folderPath}`);
-        if(!verifyHash(folderPath, pubKey)) return reject('hash of downloaded folder is incorrect!!!');
+        if(!verifyHash(folderPath, pubKey)) return reject('Hash of downloaded folder is incorrect!!!');
         try {
             fs.rmSync('internal.bak', {force: true, recursive: true});
         } catch(e) {} // can silently fail
@@ -100,7 +100,6 @@ function runUpdate() { return new Promise((resolve, reject) => {update_info.then
         let writers = 0;
         let finished = false;
         zipFile.on('entry', (headers, stream, next) => {
-            console.log('inflating file', headers.name);
             if(path.posix.normalize(headers.name).startsWith('../')) {
                 return reject(`path ${headers.name} is pointing outside the folder!!!`);
             }

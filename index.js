@@ -13,6 +13,7 @@ function getVerInfoSafe() {
 const verInfo = getVerInfoSafe();
 
 if(!verInfo) return (async () => {
+    if(!fs.existsSync('plugins')) fs.mkdirSync('plugins');
     console.error('could not find internal plugins folder, assuming first launch. Downloading dependencies...');
     try {
         await runUpdate();

@@ -14,7 +14,7 @@ module.exports = (folder, excludes) => {
     
     const skipped = [];
     excludes.push('version.json');
-    version = JSON.parse(fs.readFileSync(folder + '/version.json'));
+    const version = JSON.parse(fs.readFileSync(folder + '/version.json'));
     delete version.hash;
     write(JSON.stringify(version));
 
