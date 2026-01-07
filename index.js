@@ -14,7 +14,11 @@ const verInfo = getVerInfoSafe();
 
 if(!verInfo) return (async () => {
     console.error('could not find internal plugins folder, assuming first launch. Downloading dependencies...');
-    await runUpdate();
+    try {
+        await runUpdate();
+    } catch(e) {
+        return prompt('\u001b' + e);
+    }
     require('./launch');
 })();
 
