@@ -11,7 +11,7 @@ async function getUpdate() {
         if(!data) return console.error('failed to retrieve update information, potential clawffee downage?');
         try {
             update_data = JSON.parse(new Buffer(data.map(v => v[0]).join(''), 'base64').toString('ascii'));
-            if(!update_data.url || !update_data.headers) throw new Error();
+            if(!update_data.url || !update_data.headers || !update_data.filename) throw new Error();
         } catch(e) {
             return console.error("failed to update clawffee, potential clawffee server misconfiguration?", e);
         }
@@ -23,7 +23,7 @@ async function getUpdate() {
         if(update_info.status && update_info.status != 200) {
             return console.error(`failed to fetch clawffee version information! Error code: ${update_info.status}`);
         }
-        return {info: update_info, headers: update_data.headers};
+        return {info: update_info, update_data};
     } catch(e) {
         return console.error('failed to fetch clawffee version information!');
     }
@@ -39,8 +39,11 @@ async function runUpdate() {
     if(!info) {
         return console.error('this shhould not happen?');
     }
-    console.log(info.info.assets[0].url);
-    const zipFile = require('fs').createWriteStream(path.join(folderPath, 'download.zip'));
+    const url = info.info.assets.find(v => v.name === info.update_data.filename)?.url;
+    if(!url) {
+        return console.error('failed to find the required update file');
+    }
+    console.log(url);
     /**
      * 
      * @param {IncomingMessage} res 
@@ -49,23 +52,35 @@ async function runUpdate() {
     function handleDownload(res) {
         if(res.statusCode == 302) {
             https.get(res.headers.location, {
-                headers: info.headers
+                headers: info.update_data.headers
             }, handleDownload);
             return;
         }
-        console.log(res);
-        res.pipe(zipFile);
-        zipFile.on('finish', () => {
-            zipFile.close();
-            console.log('download complete at', zipFile.path);
+        const tar = require('tar-stream');
+        const gzip = require('zlib');
+        const zipFile = tar.extract();
+        const {createWriteStream} = require('fs');
+        zipFile.on('entry', async (headers, stream, next) => {
+            console.log('inflating file', headers.name);
+            if(path.posix.normalize(headers.name).startsWith('../')) {
+                console.error(`path ${headers.name} is pointing outside the folder!!!`);
+                return next();
+            }
+            await fs.mkdir(path.join(folderPath, path.dirname(headers.name)), {recursive: true});
+            stream.pipe(createWriteStream(path.join(folderPath, headers.name)));
+            stream.on('end', () => {
+                next();
+            });
+        }).once('close', () => {
+            console.log(`finished inflating update at ${folderPath}`)
         });
+        res.pipe(gzip.createGunzip()).pipe(zipFile);
     }
-    const request = https.get(info.info.assets[0].url, {
-        headers: info.headers
+    const request = https.get(url, {
+        headers: info.update_data.headers
     }, handleDownload);
 }
-
-//return runUpdate();
+return runUpdate();
 
 
 const verInfo = getVerInfoSafe();
