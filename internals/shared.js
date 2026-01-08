@@ -64,19 +64,16 @@ function runUpdate() { return new Promise((resolve, reject) => {update_info.then
         console.log(`finished inflating update at ${folderPath}`);
         if(!verifyHash(folderPath, pubKey)) return reject('Hash of downloaded folder is incorrect!!!');
         try {
-            fs.rmSync('internal.bak', {force: true, recursive: true});
+            fs.rmSync('plugins/internal.bak', {force: true, recursive: true});
         } catch(e) {} // can silently fail
         try {
-            fs.renameSync('plugins/internal', 'internal.bak');
+            fs.renameSync('plugins/internal', 'plugins/internal.bak');
         } catch(e) {} // can silently fail, either means the file doesnt exist or it will fail loudly in the next step
         try {
             fs.renameSync(folderPath, 'plugins/internal');
         } catch(e) {
             return reject('failed to move the update to the required position');
         }
-        try {
-            fs.rmSync('internal.bak');
-        } catch(e) {} // can silently fail, not removing the backup is fine
         resolve();
     }
 
