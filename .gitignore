@@ -9,6 +9,7 @@ config/*
 
 commands/*
 !commands/examples
+log.txt
 
 plugins/*
 !plugins/builtin
