@@ -1,6 +1,5 @@
 const path = require('path');
 const crypto = require('crypto');
-const { Console } = require('console');
 const { IncomingMessage } = require('http');
 const fs = require('fs');
 
