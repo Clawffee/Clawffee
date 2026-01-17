@@ -51,6 +51,29 @@ const fs = require('fs');
     const ignoredFiles = [...process.argv.slice(process.argv.findLastIndex(v => v.startsWith('-')) + 2)];
     const clearHash = require('./internals/hash_folder.js')(folder, ignoredFiles);
     console.log(clearHash);
+    const foundFiles = new Set();
+    const err = new Set();
+    function checkFolder(p) {
+        const files = fs.readdirSync(p);
+        files.filter(v => !ignoredFiles.includes(path.basename(v))).forEach(v => {
+            v = p + '/' + v;
+            const lv = v.toLowerCase();
+            if(foundFiles.has(lv)) {
+                err.add(v);
+                return;
+            }
+            foundFiles.add(v.toLowerCase());
+            const stat = fs.statSync(v);
+            if(stat.isDirectory()) {
+                checkFolder(v);
+            }
+        });
+    }
+    checkFolder(folder);
+    if(err.size) {
+        console.error('the following files exist multiple times!\n');
+        return console.log(JSON.stringify(Array.from(err),null,4));
+    }
 
     let keypath = await getParam('-k', 'specify a key path(null to generate a new one)');
     if (!keypath) {

@@ -20,15 +20,18 @@ module.exports = (folder, excludes) => {
 
     
     function enterFolder(p) {
-        const files = fs.readdirSync(p);
-        files.sort((a,b) => a.localeCompare(b, "en")).forEach(v => {
+        const files = fs.readdirSync(p, {
+            encoding: 'utf-8',
+            recursive: false
+        });
+        files.sort((a,b) => a.toLowerCase().localeCompare(b, "en")).forEach(v => {
             v = p + '/' + v;
             if(excludes?.includes(v.substring(folder.length + 1)))
                 return skipped.push(v.substring(folder.length + 1));
-            write(v.substring(folder.length + 1));
+            write(Buffer.from(v.substring(folder.length + 1).toLowerCase(), 'utf-8'));
             const stat = fs.statSync(v);
             if(stat.isFile()) {
-                const content = fs.readFileSync(v);
+                const content = Buffer.from(fs.readFileSync(v, 'utf-8'), 'utf-8');
                 write(content);
             } else if(stat.isDirectory()) {
                 enterFolder(v);
