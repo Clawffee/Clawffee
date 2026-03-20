@@ -14,6 +14,7 @@ log.txt
 plugins/*
 !plugins/builtin
 !plugins/internal
+!plugins/twurple
 plugins/builtin/twitch_data.js
 plugins/internal/_dashboard
 
