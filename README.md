@@ -163,7 +163,7 @@ reloadPlugin(__filename);
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/PurredCoffee/Clawffee.git
+   git clone https://github.com/Clawffee/Clawffee.git
    cd Clawffee
     ```
 
