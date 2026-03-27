@@ -1,180 +1,152 @@
 # ![Clawffee Logo](https://raw.githubusercontent.com/PurredCoffee/Clawffee/refs/heads/master/assets/clawffee96.png) Clawffee
-
-A simple Twitch bot tool for streamers!
-
+###### A simple Twitch bot tool for streamers!
 
 ## Download
 
-1. Download the latest release from [here](https://github.com/PurredCoffee/Clawffee/releases).
+1. Download the latest release from [here](https://github.com/Clawffee/Clawffee/releases).
 
-2. Extract the zip and run `clawffee.exe` (Windows) or `clawffee` (Linux/Mac) to start the bot.
+2. Run `clawffee.exe` (Windows) or `clawffee` (Linux/Mac) in a *preferrably empty* directory.
+    > This will create the following directories:
+    > - `commands`: This is where you will write your custom scripts and commands.
+    > - `plugins`: This is where the required plugins will be downloaded.
+    > - `config`: This is where the configuration files will be stored.
+    > - `log.txt`: This is the log file where the logs of the previous execution will be stored. **please send this file when reporting bugs!**
+4. You will be prompted to download the latest version of required plugins. These will be downloaded to the `plugins` directory.
+    > You can also create your own plugins by creating JavaScript files in subdirectories of the `plugins` directory.
 
-3. Use the dashboard (at `html/dashboard.html`) to authenticate your account for use with clawffee.
+    > Agreeing will execute code from the plugins! The default plugins are signed by me to ensure their authenticity
+    >
+    > Be careful when adding third-party plugins or creating your own plugins, as they execute arbitrary code on your machine.
+5. Write your first script in the `commands` directory. By creating a `.js` file!
+    > With great power comes great responsibility! Clawffee lets you do whatever you want. This includes causing harm to your machine, Twitch account, or OBS setup if you are not careful. While Clawffee has guard rails, the point is to give you freedom so all of them can be overcome by sheer will.
+    >
+    > **You are responsible for the code you run in Clawffee!**
 
-4. Write your first script in the `commands` directory. 
-    1. For example, create a file named `hello.js` with the following content:
-        ```javascript
-        console.log("hello");
-        ```
-        save the file and you will notice a hello pop up in the console!
+## Getting started:
 
-    2. From here you can play around and see what happens. e.g. if we do
-        ```javascript
-        setTimeout(() => {
-            console.log("hello");
-        }, 5000);
-        ```
-        and save the file we will be able to see "hello" show up after 5 seconds (5000 miliseconds)
+create an empty file called 'hello.js' in the `commands` directory.
+> [!IMPORTANT]
+> **Ensure that clawffee is running!**
 
-    3. With a slight adjustment
-        ```javascript
-        setInterval(() => {
-            console.log("hello");
-        }, 5000);
-        ``` 
-        "hello" is shown every 5 seconds!
-
-    4. If you have an account tied to clawffee you can use
-        ```javascript
-        const { twitch } = require('#helpers');
-        ```
-        to get access to twitch related commands 
-
-        you would use them like this:
-        ```javascript
-        const { twitch } = require('#helpers');
-
-        twitch.connectedUser.chat.onMessage((channel, user, text, message) => {
-            if(text == '!hello') {
-                twitch.connectedUser.say(channel, `Hello, ${user}!`);
-            }
-        });
-        ```
-
-Check the `commands/examples` directory for more examples of how to create commands and scripts.
-
-
-## Features
-
-- **Custom Scripts**: Write your own scripts to create and extend functionality.
-- **User-Friendly**: Designed to be easy to use for both streamers and viewers. As long as you understand basic JavaScript, you can create custom commands and scripts with no extra thought.
-- **Real-Time Updates**: Changes take effect immediately without needing to restart the bot.
-- **Dashboard**: A web-based dashboard for managing the bot and viewing logs.
-- **Cross-Platform**: Works on any platform that supports Node.js.
-- **Multi-Channel Support**: Manage multiple Twitch channels from a single instance.
-- **Integration**: Connect with other services like Discord, Twitter, etc.
-- **API Access**: Create bot features accessible via a REST API.
-
-
-## Usage
-
-There are a few built-in plugins that provide basic functionality, such as sending messages to Twitch chat, managing commands, and handling events. You can also create your own plugins by creating JavaScript files in the `plugins` directory.
-
-Built-in plugins include:
-
-- **Twitch**: Handles Twitch API interactions, chat messages, and user management.
-    ```javascript
-    const { twitch } = require('#helpers');
-    twitch.connectedUser.chat.onMessage((channel, user, text, message) => {
-        if(text === '!hello') {
-            twitch.connectedUser.say(channel, `Hello, ${user}!`);
-        }
-    });
-
-    setInterval(() => {
-        // Send a message to the channel every 5 minutes
-        twitch.connectedUser.say('#your_channel', 'This is a scheduled message!');
-    }, 5 * 60 * 1000);
-    ```
-
-- **OBS**: Provides OBS WebSocket integration for controlling OBS Studio.
-    ```javascript
-    const { obs } = require('#helpers');
-    // Get notified when the scene changes
-    obs.connectedUser.on('SceneChanged', (sceneName) => {
-        console.log(`Switched to scene: ${sceneName}`);
-    });
-    // Change the current scene in OBS
-    obs.connectedUser.setCurrentScene('MyScene');
-    ```
-
-- **Files**: Provides file system utilities for reading and writing files.
-    ```javascript
-    const { files } = require('#helpers');
-
-    let data = files.autoSavedJSON('data.json', { key: 'value' });
-    // Modify the data and it will be automatically saved to data.json
-    data.key = 'new value';
-    // same approach for INI files
-    let iniData = files.autoSavedINI('config.ini', { section: { key: 'value' } });
-    ```
-
-- **Persistent variable**: Provides persistent storage for data that needs to be saved across script reloads.
-    ```javascript
-    const x = persistent.counter;
-    console.log(`this code has been reloaded ${x} time${x != 1 ? "s" : ""}!`)
-    // Increment the counter and save it
-    persistent.counter = x + 1;
-    ```
-
-- **Default Overrides**: Provides default overrides for common functions and utilities.
-    ```javascript
-    console.log('This is overriden to also print to the dashboard!');
-
-    let circularReference = {};
-    circularReference.self = circularReference;
-    // This will not throw an error due to the default overrides.
-    JSON.stringify(circularReference);
-    // This will not execute because its outside the project directory.
-    require('node:fs').rmSync('C://system32/');
-    // !!! This does not mean that you cannot delete system32 !!!
-    //        you just cannot do it with common functions!
-    ```
-
-- **Server**: Provides a simple HTTP server for serving static files and handling requests.
-    ```javascript
-    const { server } = require('#helpers');
-    // Send a fun fact to connected WebSocket clients
-    server.sharedServerData.funFact = "Did you know that Clawffee is a play on words combining 'claw' and 'coffee'? It just sounded cute!";
-    // Register a REST API to get the fun fact
-    server.setFunction('/getFunFact', (searchParams, res) => res.write(sharedServerData.funFact)); 
-    ```
-
-### Create your own Plugin
-To create a new plugin, create a new JavaScript file in the `plugins` directory and export an object with the desired functionality.
-
-To reload plugins that depend on your plugin, you can use the `reloadPlugin` function from the `builtin/internal/ClawCallbacks` plugin. This allows you to dynamically reload commands once your plugin is ready. Here's an example of how to do this in your script:
+You should see the following code in the file:
 ```javascript
-const { clawCallbacks: { reloadPlugin } } = require('../internal/internal);
-// Reload all plugins and scripts
-reloadPlugin(__filename);
+const { 
+    files, server, twurple, 
+    twitch_data, obs, persistent, 
+    selfClearing, extras 
+} = require('../plugins/builtin/index');
+console.log('Awoof!')
+```
+A message saying `Awoof!` should show up in the dashboard console. 
+> This means that your script is immediately running!
+
+From here you can play around and see what happens. e.g. if we do
+```javascript
+setTimeout(() => {
+    console.log("Awoof after 5 seconds!");
+}, 5000);
+```
+and save the file we will see the message in the console after 5 seconds.
+> (5000 milliseconds = 5 seconds)
+
+> [!TIP]
+> alternatively, if we do
+> ```javascript
+> setInterval(() => {
+>     console.log("Awoof every 5 seconds!");
+> }, 5000);
+> ``` 
+> the message is shown every 5 seconds!
+
+
+### Lets create a simple ping command.
+If you want to interact with Twitch, you can use the `twurple` plugin, by default accessible via `twurple` in your scripts.
+> [!NOTE]
+> Ping command: A command that responds with "Pong!" when a user types "!ping" in Twitch chat.
+
+> [!WARNING]
+> After adding an account to clawffee via twurple you will need to edit the `config/twitch.json` file to add the channels you want the bot to connect to.
+> **Also remember to restart clawffee after editing the config file!**
+
+you would use it like this:
+```javascript
+const { twurple } = require('../plugins/builtin/index');
+// This should already be at the top of your script but we will import it for clarity and convenience.
+
+twurple.connectedUser.chat.onMessage((channel, user, text, message) => {
+    if(text == '!ping') {
+        twitch.connectedUser.say(channel, `Pong! ${user}`);
+    }
+});
 ```
 
+## Default Features
+
+### Hot-Reloading
+> Any changes you make to the scripts in the `commands` directory will be automatically reloaded without needing to restart the bot or affecting the state of other commands.
+### Interval and Callback Management
+> All intervals and callbacks are automatically managed and will be cleared when the script is reloaded to prevent memory leaks and unintended behavior.
+
+> **For plugin developers**: You are the one responsible for managing this in your plugin, the `internal` plugin provides helpers that will do this for you.
+### Plugins
+> | Name | Description|
+> |-|-|
+> |**`twurple`**| Twitch API integration using Twurple.|
+> |**`server`**|A simple HTTP server for serving files with an extra object called `sharedServerData` that will automatically keep itself in sync with websites connected to the server, letting you easily send data to and from your website and your scripts.|
+> |**`obs`**|OBS WebSocket integration for controlling OBS Studio.|
+> |**`files`**|File system utilities for reading and writing files as JSON or INI.|
+> |**`persistent`**|Provides persistent storage for data that needs to be saved across script reloads.|
+> |**`selfClearing`**|Provides utilities for self-clearing timeouts and intervals.|
+> |**`extras`**| Provides various utility functions and helpers.<br>E.g:<br> - `playSound`: A function to play sound files|
+### JSON and INI Auto-Saving
+> When you write to a JSON file that was read via `require`, it will automatically save the changes to the file. The same applies to INI files.
+### Default Overrides
+> Some functions and utilities are overridden by default to provide a streamlined experience and to prevent common mistakes, such as accidentally deleting important files or crashing the bot with circular references.
+>- **`console`**: Overriden to provide more information about the state of the bot.
+>- **`JSON.stringify`**: Overriden to handle circular references without throwing an error.
+>- **`alert`**: Overriden to show a notification instead of blocking the terminal.
+>- **`confirm`** & **`prompt`**: Overriden to show a popup window instead of blocking the terminal.
+>- **loops**: All loops are automatically wrapped in a try-catch block to prevent infinite loops from crashing the bot. If an infinite loop is detected, it will be automatically stopped and a warning message will be logged. (default timeout is longer than the amount of inputs js can theoretically handle)
+
+### Create your own Plugin
+> To Create your own plugin, create a folder in the `plugins` directory and create a JavaScript file in that folder. The plugin will be automatically loaded when clawffee launches and available for use in your scripts. More information will be available in the [Wiki](https://github.com/Clawffee/Clawffee/wiki)
 
 ## Dependencies
 
-- [Node.js](https://nodejs.org/) (v16.0.0 or higher)
+- [Bun](https://bun.com/) - JavaScript runtime used to build Clawffee
 - [Twurple](https://twurple.js.org/) - Twitch API library
-- [obs-websocket-js](https://npmjs.com/package/obs-websocket-js) - OBS WebSocket library
 - [ini](https://npmjs.com/package/ini) - INI file parser
+- [tar-stream](https://npmjs.com/package/tar-stream) - Tar file parser
 
-
-## Installation
+## Manual Build Instructions
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Clawffee/Clawffee.git
+   git clone https://github.com/PurredCoffee/Clawffee.git
    cd Clawffee
     ```
-
 2. Install dependencies:
     ```bash
     bun install
     ```
-
 3. Start the bot:
+    ```bash
+    bun launch.js
+    ```
+
+### Signing
+To be able to build clawffee you will need to build the internal plugin.
+
+4. Use the `hash.js` script to generate a hash of the plugin:
+   ```bash
+   bun hash.js -f internal
+   ```
+   You will then enter the hashing helper which should guide you through signing the plugin.
+5. You can now run clawffee with hash verification enabled by running
     ```bash
     bun index.js
     ```
-
-4. (Optional) Open the dashboard by opening `html/dashboard.html` in your web browser to authenticate a bot account.
+6. To build clawffee you can use bun's built-in packaging tool:
+    ```bash
+    bun build index.js --compile --outfile clawffee 
+    ```
