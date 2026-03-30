@@ -108,8 +108,8 @@ twurple.connectedUser.chat.onMessage((channel, user, text, message) => {
 >- **`confirm`** & **`prompt`**: Overriden to show a popup window instead of blocking the terminal.
 >- **loops**: All loops are automatically wrapped in a try-catch block to prevent infinite loops from crashing the bot. If an infinite loop is detected, it will be automatically stopped and a warning message will be logged. (default timeout is longer than the amount of inputs js can theoretically handle)
 
-### Create your own Plugin
-> To Create your own plugin, create a folder in the `plugins` directory and create a JavaScript file in that folder. The plugin will be automatically loaded when clawffee launches and available for use in your scripts. More information will be available in the [Wiki](https://github.com/Clawffee/Clawffee/wiki)
+## Create your own Plugin
+To Create your own plugin, create a folder in the `plugins` directory and create a JavaScript file in that folder. The plugin will be automatically loaded when clawffee launches and available for use in your scripts. More information will be available in the [Wiki](https://github.com/Clawffee/Clawffee/wiki)
 
 ## Dependencies
 
