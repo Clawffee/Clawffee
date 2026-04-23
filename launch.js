@@ -7,7 +7,10 @@ globalThis.clawffeeInternals = {
         verifyHash,
         runUpdate,
         pubKey,
-        getPubHash
+        getPubHash,
+        meta: {
+            version: "0.9.0"
+        }
     }
 }
 require(fs.realpathSync('./plugins/internal/_clawffee/index.js'));
