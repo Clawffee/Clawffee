@@ -21,8 +21,6 @@ plugins/internal/_dashboard
 images/
 
 node_modules
-package-lock.json
-bun.lock
 
 obs-prot.json
 !build/**/*
