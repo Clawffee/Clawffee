@@ -10,6 +10,7 @@
   libnotify,
   bash,
   bun,
+  withWebview ? true,
 }:
 let
   fullSrc = ./..;
@@ -103,11 +104,18 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     substituteInPlace "$out/share/clawffee/nix/clawfee.sh" \
       --replace '@CLAWFFEE_LAUNCHER@' "$out/share/clawffee/index.js"
 
-    makeWrapper $out/share/clawffee/nix/clawfee.sh $out/bin/clawffee \
-      --inherit-argv0 \
-      --prefix PATH ':' "$binPath" \
-      --set CLAWFFEE_LAUNCHER "$out/share/clawffee/index.js" \
-      --set-default WEBVIEW_PATH "${webview}/lib/libwebview.so"
+    makeWrapper ${
+      lib.concatStringsSep " \\\n" (
+        [
+          "$out/share/clawffee/nix/clawfee.sh"
+          "$out/bin/clawffee"
+          "--inherit-argv0"
+          "--prefix PATH ':' \"$binPath\""
+          "--set CLAWFFEE_LAUNCHER \"$out/share/clawffee/index.js\""
+        ]
+        ++ lib.optional (withWebview) "--set-default WEBVIEW_PATH \"${webview}/lib/libwebview.so\""
+      )
+    }
 
     runHook postInstall
   '';
