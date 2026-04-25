@@ -117,7 +117,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     longDescription = ''
       A simple Twitch bot tool for streamers!
 
-      Note: The environment variable CLAWFFEE_PATH can be set to the folder where the commands and plugins of the bot are stored. 
+      Note: The environment variable CLAWFFEE_PATH can be set to the folder where the commands and plugins of the bot are stored.
     '';
     homepage = "https://github.com/Clawffee/Clawffee";
     license = lib.licenses.bsd3;
@@ -125,5 +125,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       "aarch64-linux"
       "x86_64-linux"
     ];
+    mainProgram = "clawffee";
   };
 })
