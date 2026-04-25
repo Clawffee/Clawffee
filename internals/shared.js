@@ -3,8 +3,6 @@ const crypto = require('crypto');
 const { IncomingMessage } = require('http');
 const fs = require('fs');
 
-
-
 function getPubHash(encHash, pubKey) {
     try {
         return crypto.publicDecrypt(crypto.createPublicKey({key: pubKey, format: 'pem'}), encHash).toString('base64');
@@ -51,6 +49,7 @@ async function getUpdate() {
     }
 }
 const update_info = getUpdate();
+const meta = require('../package.json');
 
 function runUpdate() { return new Promise((resolve, reject) => {update_info.then((info) => {
     if(!info.info || info.info.message) {
@@ -67,7 +66,7 @@ function runUpdate() { return new Promise((resolve, reject) => {update_info.then
     function verifyDownload() {
         console.log(`finished inflating update at ${folderPath}`);
         if(!verifyHash(folderPath, pubKey)) return reject('Hash of downloaded folder is incorrect!!!');
-        if(!verifyVersion(globalThis.clawffeeInternals.launcher.meta.version, folderPath)) return reject('Clawffee executable outdated for the update, please download the newest Clawffee executable manually if you wish to update!')
+        if(!verifyVersion(globalThis?.clawffeeInternals?.launcher?.meta?.version ?? meta.version, folderPath)) return reject('Clawffee executable outdated for the update, please download the newest Clawffee executable manually if you wish to update!')
         try {
             fs.rmSync('plugins/internal.bak', {force: true, recursive: true});
         } catch(e) {} // can silently fail
@@ -126,5 +125,5 @@ function runUpdate() { return new Promise((resolve, reject) => {update_info.then
 });});}
 
 module.exports = {
-    pubKey, update_info, runUpdate, verifyHash, getPubHash
+    pubKey, update_info, runUpdate, verifyHash, getPubHash, meta
 }

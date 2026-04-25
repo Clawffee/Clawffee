@@ -1,4 +1,6 @@
 {
+  "name": "clawffee",
+  "version": "0.9.0",
   "scripts": {
     "start": "node --expose_gc index.js"
   },
