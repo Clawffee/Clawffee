@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {update_info, verifyHash, runUpdate, pubKey, getPubHash} = require('./internals/shared');
+const {update_info, verifyHash, runUpdate, pubKey, getPubHash, meta} = require('./internals/shared');
 
 globalThis.clawffeeInternals = {
     launcher: {
@@ -8,9 +8,7 @@ globalThis.clawffeeInternals = {
         runUpdate,
         pubKey,
         getPubHash,
-        meta: {
-            version: "0.9.0"
-        }
+        meta
     }
 }
 require(fs.realpathSync('./plugins/internal/_clawffee/index.js'));
