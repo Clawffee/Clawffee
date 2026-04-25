@@ -1,10 +1,16 @@
+//@ts-check
 const path = require('path');
 const crypto = require('crypto');
 const { IncomingMessage } = require('http');
 const fs = require('fs');
 
-
-
+const meta = require('./meta.json');
+/**
+ * 
+ * @param {Buffer<ArrayBuffer>} encHash 
+ * @param {string} pubKey 
+ * @returns 
+ */
 function getPubHash(encHash, pubKey) {
     try {
         return crypto.publicDecrypt(crypto.createPublicKey({key: pubKey, format: 'pem'}), encHash).toString('base64');
@@ -12,17 +18,29 @@ function getPubHash(encHash, pubKey) {
         return null;
     }
 }
+/**
+ * 
+ * @param {string} folder
+ * @param {string} pubKey 
+ * @returns 
+ */
 function verifyHash(folder, pubKey) {
-    const encHash = Buffer.from(JSON.parse(fs.readFileSync(path.join(folder,'version.json'))).hash, 'base64');
+    const encHash = Buffer.from(JSON.parse(fs.readFileSync(path.join(folder,'version.json')).toString()).hash, 'base64');
     return getPubHash(encHash, pubKey) === require('./hash_folder.js')(folder, []).hash.toString('base64');
 }
+/**
+ * 
+ * @param {string} version
+ * @param {string} folder
+ * @returns 
+ */
 function verifyVersion(version, folder) {
-    const reqVer = JSON.parse(fs.readFileSync(path.join(folder,'version.json'))).clawffee_version;
+    const reqVer = JSON.parse(fs.readFileSync(path.join(folder,'version.json')).toString()).clawffee_version;
     return version != reqVer;
 }
 
 
-
+//@ts-ignore
 const pubKey = require('../internal.pub.txt')?.default || require('../internal.pub.txt');
 
 async function getUpdate() {
@@ -67,7 +85,7 @@ function runUpdate() { return new Promise((resolve, reject) => {update_info.then
     function verifyDownload() {
         console.log(`finished inflating update at ${folderPath}`);
         if(!verifyHash(folderPath, pubKey)) return reject('Hash of downloaded folder is incorrect!!!');
-        if(!verifyVersion(globalThis.clawffeeInternals.launcher.meta.version, folderPath)) return reject('Clawffee executable outdated for the update, please download the newest Clawffee executable manually if you wish to update!')
+        if(!verifyVersion(meta.version, folderPath)) return reject('Clawffee executable outdated for the update, please download the newest Clawffee executable manually if you wish to update!')
         try {
             fs.rmSync('plugins/internal.bak', {force: true, recursive: true});
         } catch(e) {} // can silently fail
@@ -126,5 +144,5 @@ function runUpdate() { return new Promise((resolve, reject) => {update_info.then
 });});}
 
 module.exports = {
-    pubKey, update_info, runUpdate, verifyHash, getPubHash
+    pubKey, update_info, runUpdate, verifyHash, getPubHash, meta
 }

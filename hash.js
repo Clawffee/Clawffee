@@ -1,3 +1,4 @@
+//@ts-check
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
@@ -6,7 +7,7 @@ const fs = require('fs');
     prompt.start();
     prompt.message = '';
     prompt.delimiter = ':';
-
+    
     async function promptClear(message) {
         const { txt } = await prompt.get({
             properties: {

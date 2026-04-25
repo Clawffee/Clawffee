@@ -1,10 +1,21 @@
+//@ts-check
 const crypto = require('crypto');
 const fs = require('fs');
 
+/**
+ * 
+ * @param {string} folder 
+ * @param {string[]} excludes 
+ * @returns 
+ */
 module.exports = (folder, excludes) => {
     
     const hash = crypto.createHash('sha256');
     
+    /**
+     * 
+     * @param  {...any} data 
+     */
     function write(...data) {
         data.forEach(p => {
             hash.write(String(p).replaceAll('\0', '\0\0'));
@@ -12,9 +23,12 @@ module.exports = (folder, excludes) => {
         });
     }
     
+    /**
+     * @type {string[]}
+     */
     const skipped = [];
     excludes.push('version.json');
-    const version = JSON.parse(fs.readFileSync(folder + '/version.json'));
+    const version = JSON.parse(fs.readFileSync(folder + '/version.json').toString());
     delete version.hash;
     write(JSON.stringify(version));
 
