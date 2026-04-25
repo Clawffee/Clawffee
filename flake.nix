@@ -39,6 +39,12 @@
           default = clawffee;
         }
       );
+      overlays = rec {
+        clawffee = final: prev: {
+          inherit (buildPackages final) clawffee;
+        };
+        default = clawffee;
+      };
       devShells = eachSystem (
         { system, pkgs, ... }:
         {
